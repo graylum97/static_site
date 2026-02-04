@@ -1,5 +1,5 @@
 import re
-from src.textnode import TextNode, TextType
+from textnode import TextNode, TextType
 
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
     new_nodes = []
@@ -60,7 +60,7 @@ def split_nodes_image(old_nodes):
             sections = remaining_text.split(f"![{image[0]}]({image[1]})", 1)
 
             if sections[0] != "":
-                new_nodes.append(TextNode(sections[0], TextType.TEXT)
+                new_nodes.append(TextNode(sections[0], TextType.TEXT))
 
             new_nodes.append(TextNode(image[0], TextType.IMAGE, image[1]))
 
@@ -100,3 +100,16 @@ def split_nodes_link(old_nodes):
             new_nodes.append(TextNode(remaining_text, TextType.TEXT))
 
     return new_nodes
+
+def text_to_textnodes(text):
+    nodes = []
+    initial_node = TextNode(text, TextType.TEXT)
+    nodes.append(initial_node)
+
+    nodes = split_nodes_delimiter(nodes,"**", TextType.BOLD)
+    nodes = split_nodes_delimiter(nodes, "_", TextType.ITALIC)
+    nodes = split_nodes_delimiter(nodes, "`", TextType.CODE)
+    nodes = split_nodes_image(nodes)
+    nodes = split_nodes_link(nodes)
+    return nodes
+
